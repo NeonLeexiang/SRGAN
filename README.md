@@ -6,7 +6,8 @@
 
 
 ## SRGAN 论文重点
-在实现 `SRGAN` 论文之前我们实现了我们的传统的 `VDSR` 以及更加前面我们实现过的 `SRCNN` 这两个都是比较入门的 `Super Resolution` 方向的论文。  
+在实现 `SRGAN` 论文之前我们实现了我们的传统的 `VDSR` 以及更加前面我们实现过的 `SRCNN` 这两个都是比较入门的 `Super Resolution` 方向的论文。    
+`GAN` 神经网络是一个非常特别的神经网络，训练会极其复杂。总体来说 `SRGAN` 的 `generator` 使用的是 `VGG19`。
 
 #### VDSR
 `VDSR`  [Accurate Image Super-Resolution Using Very Deep Convolutional Networks](https://www.cv-foundation.org/openaccess/content_cvpr_2016/papers/Kim_Accurate_Image_Super-Resolution_CVPR_2016_paper.pdf)  
@@ -30,17 +31,21 @@
 之前我们的 `SRCNN` 使用的是 `cifar-10` , 那个数据集不是很好用，因为它的原始数据就是 `32 * 32` 大小的，
 不太适合放大缩小。我们尝试试试其他的数据集看看效果会是怎样。  
 然后我们选用一个比较大的数据集也就是我们的 `BSD500` 的数据集。
-数据集选用的是 `BSD500` 但是我们截取成为 256*256
+数据集选用的是 `BSD500` 但是我们截取成为 `256*256`。  
+然后通过我们的 `SRGAN` 网络 `generator` 超分辨为 `256*256`
 
 
 
 ## Prerequisites
  * Tensorflow  > 2.0  
  * Keras > 2.0
-也是想着通过这个项目去尝试使用 `Tensorflow 2.0` 以及架构在它上面的 `Keras` 然后复现一下超分辨比较经典的论文 `SRGAN` . 
+ * pytorch > 1.0
+也是想着通过这个项目去尝试使用 `Tensorflow 2.0` 以及架构在它上面的 `Keras` 然后复现一下超分辨比较经典的论文 `SRGAN` .    
+也想尝试下对于更加复杂的 `GAN` 神经网络去尝试更加实用的 `pytorch` 框架。
 
 
 ## Usage
+~~ignore the usage~~
 For training, `python trains.py`
 <br>
 For testing, `python trains.py` 暂时没有写对应的 `test.py`
@@ -48,14 +53,15 @@ For testing, `python trains.py` 暂时没有写对应的 `test.py`
 
 
 ## Problems
-* 因为使用的是 `cifar10`的数据集，会出现的问题就是它的图像数据的大小是 32*32 的，
+* 因为使用的是 `cifar10`的数据集，会出现的问题就是它的图像数据的大小是 `32*32` 的，
   所以没有做一些放大缩小的操作获取对应的 High Resolution Image -> Low Resolution Image 的操作。
   
 * 做的 `Keras` 和 `Tensorflow` 的训练并没有像 `Pytorch` 一样使用 `tqdm` 模块去做一些操作。  
   
 * `pytorch` 要非常注意一点就是它的 Tensor 和 `tensorflow` 或者 `keras` 不一样，可能 `tensorflow` `keras` 是以
-  `Size * H * W * C` 而 `pytorch` 是以 `Size * C * H * W` 的方式去计算的，所以使用的数据需要通过 `torch.permute` 的 方式修改数据格式。  
-    
+  `Size * H * W * C` 而 `pytorch` 是以 `Size * C * H * W` 的方式去计算的，所以使用的数据需要通过 `torch.permute` 的 方式修改数据格式。
+  
+* `pytorch` 的复现有许多代码上的不理解，后续慢慢解决。
   
 
 ## Result

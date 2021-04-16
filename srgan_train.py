@@ -84,7 +84,11 @@ def train(epochs=5, batch_size=2, learning_rate=1e-4, img_shape=image_shape,
     for e in range(epochs):
         print('-'*10, 'Epoch {}'.format(e), '-'*10)
         for _ in tqdm(range(batch_count)):
-            # TODO: to figure out the training process of the gan network
+            '''
+                1st: use generator to create a fake img
+                2nd: updating and training the discriminator by using the fake img and real img
+                3rd: updating and then training the generator by using the fake img and real img
+            '''
             rand_nums = np.random.randint(0, x_train_hr.shape[0], size=batch_size)
 
             img_batch_hr = x_train_hr[rand_nums]
@@ -114,7 +118,6 @@ def train(epochs=5, batch_size=2, learning_rate=1e-4, img_shape=image_shape,
         with open(model_save_dir+'losses.txt', 'a') as f:
             f.write('epoch %d  :  gan_loss--->[ {} ] ; discriminator_loss--->[ {} ]'.format(e, gan_loss, discriminator_loss))
 
-        # TODO: psnr calc
         if e == 0 or e+1 % 100 == 0:
             print('\n'*5)
             generated_test_img = generator.predict(x_test_lr)
