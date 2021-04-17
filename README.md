@@ -52,7 +52,14 @@ For testing, `python trains.py` 暂时没有写对应的 `test.py`
 
 
 
-## Problems
+## Problems  
+目前因为分配的显存没有办法做到大小为 `256*256` 的超分辨，所以 `torch.cuda()` 会超出显存大小，
+如果我们将整个网络的大小缩放放小，我们的训练将会更加快速。    
+  
+有一个想法就是我们缩放我们的 `crop_size=128` 同时因为我们是喂入一个 `batch` 的数据进入 `cuda` ， 
+我们可以设置我们的 `batch_size` 更小，虽说一个 `epoch` 会训练更多速度，但是相应的训练速度也会更快。
+同时我们也需要考虑我们的数据过拟合的情况。
+
 * 因为使用的是 `cifar10`的数据集，会出现的问题就是它的图像数据的大小是 `32*32` 的，
   所以没有做一些放大缩小的操作获取对应的 High Resolution Image -> Low Resolution Image 的操作。
   

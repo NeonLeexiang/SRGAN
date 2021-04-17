@@ -59,6 +59,12 @@ def display_transform():
     ])
 
 
+'''
+    when we training, we use crop_size to create our model but when we evaluate,
+    we should notice the size of the images should be as the same size as the input of network layer
+'''
+
+
 class TrainDatasets:
     def __init__(self, data_dir, crop_size, upscale_factor):
         super(TrainDatasets, self).__init__()
@@ -76,16 +82,25 @@ class TrainDatasets:
         return len(self.img_filenames)
 
 
+'''
+    the default setting of the size of the val dataset is min(w, h), 
+    but the input size of the network layer is the crop size, 
+    so we should make sure it has the same size of the layer input.
+'''
+
+
 class ValDatasets:
-    def __init__(self, data_dir, upscale_factor):
+    def __init__(self, data_dir, crop_size, upscale_factor):
         super(ValDatasets, self).__init__()
+        self.crop_size = crop_size
         self.upscale_factor = upscale_factor
         self.img_filenames = [os.path.join(data_dir, x) for x in os.listdir(data_dir) if is_img_file(x)]
 
     def __getitem__(self, index):
         hr_img = Image.open(self.img_filenames[index])
-        w, h = hr_img.size
-        crop_size = calc_valid_crop_size(min(w, h), self.upscale_factor)
+        # w, h = hr_img.size
+        # crop_size = calc_valid_crop_size(min(w, h), self.upscale_factor)
+        crop_size = self.crop_size
         lr_scale = Resize(crop_size // self.upscale_factor, interpolation=Image.BICUBIC)
         hr_scale = Resize(crop_size, interpolation=Image.BICUBIC)
         hr_img = CenterCrop(crop_size)(hr_img)

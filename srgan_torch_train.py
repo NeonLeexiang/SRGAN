@@ -19,14 +19,14 @@ import pytorch_ssim
 torch.autograd.set_detect_anomaly(True)
 
 
-def srgan_torch_train(num_epochs=400, batch_size=4, upscale_factor=4, crop_size=256, train_dir='datasets/train/', val_dir='datasets/val/', model_save_dir='srgan_torch_model_file/'):
+def srgan_torch_train(num_epochs=400, batch_size=4, upscale_factor=4, crop_size=128, train_dir='datasets/train/', val_dir='datasets/val/', model_save_dir='srgan_torch_model_file/'):
     if not os.path.exists(model_save_dir):
         os.mkdir(model_save_dir)
     print('-' * 15 + '> start loading data... ', '[ {} ]'.format(datetime.now()))
 
     # dataloader and remember pytorch needs to write the dataloader file
     train_set = TrainDatasets(data_dir=train_dir, crop_size=crop_size, upscale_factor=upscale_factor)
-    val_set = ValDatasets(data_dir=val_dir, upscale_factor=upscale_factor)
+    val_set = ValDatasets(data_dir=val_dir, crop_size=crop_size, upscale_factor=upscale_factor)
     # then we need to feed the data into DataLoader
     train_loader = DataLoader(dataset=train_set, num_workers=4, batch_size=batch_size, shuffle=True)
     val_loader = DataLoader(dataset=val_set, num_workers=4, batch_size=1, shuffle=False)
