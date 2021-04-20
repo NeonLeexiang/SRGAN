@@ -25,6 +25,10 @@
 `SRCNN` [Image super-resolution using deep convolutional networks](https://ieeexplore.ieee.org/document/7115171/;jsessionid=sqmfzoJEerWjinbTLnm8TVyWaFJSTAXKVbNp_abvj-XrT4nB9Sf6!84601464)
 `SRCNN` 是 `end-to-end`（端到端）的超分算法，所以在实际应用中不需要任何人工干预或者多阶段的计算.
 
+#### SRGAN
+`SRGAN` [" Photo-Realistic Single Image Super-Resolution Using a Generative Adversarial Network"](https://arxiv.org/abs/1609.04802)  
+运用了 `SR Res Net` 的概念，运用了残差
+
 
 ## Datasets
 
@@ -81,6 +85,31 @@ For testing, `python trains.py` 暂时没有写对应的 `test.py`
 | cifar10 | 500    | SRCNN  | keras      | 25.9   |
 | cifar10 | 500    | SRCNN  | pytorch    | 26.49  |
 
+
+以下是 `SRGAN` 的 `result table`: 
+
+| Dataset | Epochs | Module | Method | psnr | 
+| ------- | ------ | ------ | ------ | ---- |
+| BSD500  |  200   | SRGAN  | pytorch| 22.4 |
+| BSD500  |  400   | SRGAN  | pytorch| 22.6 |
+
+
+训练了 200 个 Epochs 的 `SRGAN` ：
+  
+分别为
+
+| Bicubic | High Resolution | Super Resolution |
+|---------|---------------- |----------------- | 
+
+![avatar](srgan_torch_model_file/training_results/SRF_4/epoch_200_index_1.png)
+![avatar](srgan_torch_model_file/training_results/SRF_4/epoch_200_index_6.png)
+  
+训练了 400 个 Epochs 的 `SRGAN` ：
+![avatar](srgan_torch_model_file/training_results/SRF_4/epoch_400_index_2.png)
+![avatar](srgan_torch_model_file/training_results/SRF_4/epoch_400_index_5.png)
+
+[comment]: <> (<img src="srgan_torch_model_file/training_results/SRF_4/epoch_200_index_1.png" alt="Epochs 200">)
+
   
 `tensorflow` 可能是因为数据集的问题导致 `psnr` 的计算会出现一些小的问题
 
@@ -92,11 +121,11 @@ For testing, `python trains.py` 暂时没有写对应的 `test.py`
 
 ## References
 
-👇是对`markdown`使用的一些了解
+A PyTorch implementation of SRGAN based on CVPR 2017 paper
+  
+This repository is implementation of the [" Photo-Realistic Single Image Super-Resolution Using a Generative Adversarial Network"](https://arxiv.org/abs/1609.04802).
 
-This repository is implementation of the ["Image Super-Resolution Using Deep Convolutional Networks"](https://arxiv.org/abs/1501.00092).
-
-<center><img src=""></center>
+And code ["leftthomas/SRGAN"](https://github.com/leftthomas/SRGAN)
 
 ## Train
 

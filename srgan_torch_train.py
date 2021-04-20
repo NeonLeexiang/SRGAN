@@ -74,6 +74,7 @@ def srgan_torch_train(num_epochs=400, batch_size=4, upscale_factor=4, crop_size=
 
     # as a good habit we can use results dict to store our results
     results = {'d_loss': [], 'g_loss': [], 'd_score': [], 'g_score': [], 'psnr': [], 'ssim': []}
+    valing_results = {'mse': 0, 'ssims': 0, 'psnr': 0, 'ssim': 0, 'batch_sizes': 0}
 
     for epoch in range(1, num_epochs+1):
         '''
@@ -158,6 +159,14 @@ def srgan_torch_train(num_epochs=400, batch_size=4, upscale_factor=4, crop_size=
         if not os.path.exists(out_path):
             os.mkdir(out_path)
 
+        # save loss\scores\psnr\ssim
+        results['d_loss'].append(running_results['d_loss'] / running_results['batch_sizes'])
+        results['g_loss'].append(running_results['g_loss'] / running_results['batch_sizes'])
+        results['d_score'].append(running_results['d_score'] / running_results['batch_sizes'])
+        results['g_score'].append(running_results['g_score'] / running_results['batch_sizes'])
+        results['psnr'].append(valing_results['psnr'])
+        results['ssim'].append(valing_results['ssim'])
+
         if epoch % 200 == 0:
             '''
                 torch.no_grad() 是一个上下文管理器，被该语句 wrap 起来的部分将不会track 梯度。
@@ -173,16 +182,16 @@ def srgan_torch_train(num_epochs=400, batch_size=4, upscale_factor=4, crop_size=
             '''
             with torch.no_grad():
                 val_bar = tqdm(val_loader)
-                valing_results = {'mse': 0, 'ssims': 0, 'psnr': 0, 'ssim': 0, 'batch_sizes': 0}
+
                 val_images = []
                 for val_lr, val_hr_restore, val_hr in val_bar:
                     batch_size = val_lr.size(0)
                     valing_results['batch_sizes'] += batch_size
                     lr = val_lr
                     hr = val_hr
-                    # if torch.cuda.is_available():
-                    #    lr = lr.cuda()
-                    #    hr = hr.cuda()
+                    if torch.cuda.is_available():
+                        lr = lr.cuda()
+                        hr = hr.cuda()
 
                     # low resolution img input
                     sr = net_generator(lr)
@@ -256,11 +265,10 @@ def srgan_torch_train(num_epochs=400, batch_size=4, upscale_factor=4, crop_size=
             # if epoch % 200 == 0:
             torch.save(net_generator.state_dict(), os.path.join(model_save_dir, 'epochs/netG_epoch_%d_%d.pth' % (upscale_factor, epoch)))
             torch.save(net_discriminator.state_dict(), os.path.join(model_save_dir, 'epochs/netD_epoch_%d_%d.pth' % (upscale_factor, epoch)))
-            # save loss\scores\psnr\ssim
-            results['d_loss'].append(running_results['d_loss'] / running_results['batch_sizes'])
-            results['g_loss'].append(running_results['g_loss'] / running_results['batch_sizes'])
-            results['d_score'].append(running_results['d_score'] / running_results['batch_sizes'])
-            results['g_score'].append(running_results['g_score'] / running_results['batch_sizes'])
+
+            results['psnr'].pop()
+            results['ssim'].pop()
+
             results['psnr'].append(valing_results['psnr'])
             results['ssim'].append(valing_results['ssim'])
 

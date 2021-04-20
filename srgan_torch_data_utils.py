@@ -95,18 +95,34 @@ class ValDatasets:
         self.crop_size = crop_size
         self.upscale_factor = upscale_factor
         self.img_filenames = [os.path.join(data_dir, x) for x in os.listdir(data_dir) if is_img_file(x)]
+        self.hr_transform = train_hr_transform(self.crop_size)
+        self.lr_transform = train_lr_transform(self.crop_size, upscale_factor)
 
     def __getitem__(self, index):
-        hr_img = Image.open(self.img_filenames[index])
+        """
+
+        :param index:
+        :return:
+        """
+        # hr_img = Image.open(self.img_filenames[index])
         # w, h = hr_img.size
         # crop_size = calc_valid_crop_size(min(w, h), self.upscale_factor)
-        crop_size = self.crop_size
-        lr_scale = Resize(crop_size // self.upscale_factor, interpolation=Image.BICUBIC)
-        hr_scale = Resize(crop_size, interpolation=Image.BICUBIC)
-        hr_img = CenterCrop(crop_size)(hr_img)
-        lr_img = lr_scale(hr_img)
-        hr_restore_img = hr_scale(lr_img)
-        return ToTensor()(lr_img), ToTensor()(hr_restore_img), ToTensor()(hr_img)
+        # crop_size = self.crop_size
+        # lr_scale = Resize(crop_size // self.upscale_factor, interpolation=Image.BICUBIC)
+        # hr_scale = Resize(crop_size, interpolation=Image.BICUBIC)
+        # hr_img = CenterCrop(crop_size)(hr_img)
+        # lr_img = lr_scale(hr_img)
+        # hr_restore_img = hr_scale(lr_img)
+        # return ToTensor()(lr_img), ToTensor()(hr_restore_img), ToTensor()(hr_img)
+        '''
+            setting image by using the same method as TrainDataset to avoid the error with different size of the input
+        '''
+        hr_img = self.hr_transform(Image.open(self.img_filenames[index]))
+        lr_img = self.lr_transform(hr_img)
+
+        hr_restore_img = ToTensor()(Resize(self.crop_size, interpolation=Image.BICUBIC)(ToPILImage()(lr_img)))
+
+        return lr_img, hr_restore_img, hr_img
 
     def __len__(self):
         return len(self.img_filenames)
@@ -144,7 +160,11 @@ class TestDatasets:
 
 
 if __name__ == '__main__':
-    pass
+    # test = TrainDatasets('datasets/val/', 128, 4)
+    test = ValDatasets('datasets/val/', 128, 4)
+    print(test.__getitem__(0)[0].shape)
+    print(type(test.__getitem__(0)[1]))
+    # print(test.__getitem__(0)[2].shape)
 
 
 
